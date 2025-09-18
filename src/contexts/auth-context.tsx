@@ -17,7 +17,7 @@ interface IAuth {
 
 const AuthContext = createContext<IAuth | undefined>(undefined)
 
-export const AppProvider: React.FC<{ children: ReactNode }> = ({children}) => {
+export const AppAuthContextProvider: React.FC<{ children: ReactNode }> = ({children}) => {
     const [user, setUser] = useState<UserResponse | null>(null)
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true)
@@ -60,7 +60,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({children}) => {
     }
 
     const fetchUser = useCallback(async () => {
-        return authServiceInstance.getUser()
+        return authServiceInstance.getUserInfo()
             .then((user) => {
                 setUser(user)
                 setIsAuthenticated(true)

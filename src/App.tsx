@@ -1,35 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import {AppAuthContextProvider, UseAuthContext} from "./contexts/auth-context.tsx";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Home from "./components/pages/Home.tsx";
+import {Loading} from "./components/pages/Loading.tsx";
+import Register from "./components/pages/auth/Register.tsx";
+import Login from "./components/pages/auth/Login.tsx";
 
-function App() {
-  const [count, setCount] = useState(0)
+const AuthenticatedApp = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route index={true} path="/" element={<Home />} />
+            </Routes>
+        </BrowserRouter>
+    );
+};
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+const UnAuthenticatedApp = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route index={true} path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
+
+const AppContent = () => {
+    const { isAuthenticated, isAuthReady, loading } = UseAuthContext();
+
+    if (!isAuthReady) {
+        return <Loading />;
+    }
+
+    if (loading) {
+        return <Loading />;
+    }
+
+    if (!isAuthenticated) {
+        return <UnAuthenticatedApp />;
+    }
+
+    return <AuthenticatedApp />;
+};
+
+const App = () => (
+        <AppAuthContextProvider>
+            <AppContent />
+        </AppAuthContextProvider>
+);
 
 export default App
