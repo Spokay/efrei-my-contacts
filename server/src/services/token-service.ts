@@ -1,4 +1,5 @@
-import {TokenPayload} from '../models/Token';
+import {TokenPayload} from '../models/auth/Token';
+import {IUser} from '../models/User';
 import {JWT_ALGORITHM, JWT_EXP, JWT_SECRET} from '../configuration/config';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 
@@ -28,7 +29,16 @@ const decodeToken = async (token: string): Promise<TokenPayload | null> => {
 }
 
 
-export const generateToken = async (payload: TokenPayload): Promise<string> => {
+export const generateToken = async (user: IUser): Promise<string> => {
+
+    const expirationTime = Math.floor(Date.now() / 1000) + (typeof JWT_EXP === 'number' ? JWT_EXP : 3600);
+
+    const payload: TokenPayload = {
+        sub: user._id,
+        email: user.email,
+        exp: expirationTime,
+        iat: Math.floor(Date.now() / 1000)
+    };
 
     return jwt.sign(
         payload,
