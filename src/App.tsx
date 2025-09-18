@@ -20,7 +20,7 @@ const UnAuthenticatedApp = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route index={true} path="/login" element={<Login />} />
+                <Route index={true} path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
             </Routes>
         </BrowserRouter>

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { UseAuthContext } from '../../../contexts/auth-context';
 import type { AuthDto } from '../../../services/dto/auth-dto';
+import {Link} from "react-router-dom";
 
 const Login = () => {
     const { authService, handleConnection, loading } = UseAuthContext();
@@ -77,6 +78,10 @@ const Login = () => {
                     <button type="submit" disabled={loading}>
                         {loading ? 'Connexion en cours' : 'Se connecter'}
                     </button>
+
+                    <Link to={"/register"}>
+                        Pas encore de compte ? Inscrivez-vous
+                    </Link>
                 </form>
             </div>
         </div>
