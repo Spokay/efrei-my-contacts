@@ -7,7 +7,7 @@ import {Link} from "react-router-dom";
 const Login = () => {
     const { authService, handleConnection, loading } = UseAuthContext();
     const [formData, setFormData] = useState<AuthDto>({
-        username: '',
+        email: '',
         password: ''
     });
     const [error, setError] = useState<string>('');
@@ -25,7 +25,7 @@ const Login = () => {
         e.preventDefault();
         setError('');
 
-        if (!formData.username || !formData.password) {
+        if (!formData.email || !formData.password) {
             setError('Veuillez remplir tous les champs');
             return;
         }
@@ -52,12 +52,12 @@ const Login = () => {
                         </div>
                     )}
                     <div className="form-group">
-                        <label htmlFor="username">Email:</label>
+                        <label htmlFor="email">Email:</label>
                         <input
                             type="text"
-                            id="username"
-                            name="username"
-                            value={formData.username}
+                            id="email"
+                            name="email"
+                            value={formData.email}
                             onChange={handleInputChange}
                             disabled={loading}
                             required

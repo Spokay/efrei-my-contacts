@@ -8,7 +8,7 @@ import {Link} from "react-router-dom";
 const Register = () => {
     const { authService, handleConnection, loading } = UseAuthContext();
     const [formData, setFormData] = useState<RegisterRequest>({
-        username: '',
+        email: '',
         password: '',
         firstName: '',
         lastName: '',
@@ -29,7 +29,7 @@ const Register = () => {
         e.preventDefault();
         setError('');
 
-        if (!formData.username || !formData.password || !formData.firstName || !formData.lastName || !formData.phone) {
+        if (!formData.email || !formData.password || !formData.firstName || !formData.lastName || !formData.phone) {
             setError('Veuillez remplir tous les champs');
             return;
         }
@@ -80,12 +80,12 @@ const Register = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="username">Email:</label>
+                        <label htmlFor="email">Email:</label>
                         <input
                             type="email"
-                            id="username"
-                            name="username"
-                            value={formData.username}
+                            id="email"
+                            name="email"
+                            value={formData.email}
                             onChange={handleInputChange}
                             disabled={loading}
                             required

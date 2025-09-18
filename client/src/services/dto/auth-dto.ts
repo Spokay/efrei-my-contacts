@@ -1,7 +1,7 @@
 import type {BaseResponse} from "../base-service";
 
 interface AuthDto {
-    username: string
+    email: string
     password: string
 }
 
@@ -17,7 +17,7 @@ interface TokenResponse extends BaseResponse{
 }
 
 interface UserResponse extends BaseResponse{
-    username: string
+    email: string
     firstName: string
     lastName: string
     phone: string
