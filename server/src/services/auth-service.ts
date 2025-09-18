@@ -1,4 +1,4 @@
-import {AuthenticationRequest} from "../models/auth/Authentication";
+import {AuthenticationRequest, RegistrationRequest} from "../models/auth/Authentication";
 import {IUser} from "../models/User";
 import {findUserByEmail} from "./user-service";
 import {generateToken} from "./token-service";
@@ -12,7 +12,7 @@ export const authenticate = async (authenticationRequest: AuthenticationRequest)
         throw new Error('Invalid email or password');
     }
 
-    if (!validatePassword(authenticationRequest.password, user.password)) {
+    if (!verifyPassword(authenticationRequest.password, user.password)) {
         throw new Error('Invalid email or password');
     }
 
@@ -23,7 +23,19 @@ export const isAuthRequestValid = (authRequest: AuthenticationRequest): boolean 
     return authRequest.email.length > 0 && authRequest.password.length > 0;
 }
 
-const validatePassword = (inputPassword: string, storedPassword: string): boolean => {
+export const isRegistrationRequestValid = (registrationRequest: RegistrationRequest): boolean => {
+    return registrationRequest.email.length > 0 &&
+        registrationRequest.password.length >= 0 &&
+        registrationRequest.firstName.length > 0 &&
+        registrationRequest.lastName.length > 0 &&
+        validatePhoneNumber(registrationRequest.phoneNumber);
+}
+
+const verifyPassword = (inputPassword: string, storedPassword: string): boolean => {
     const hashedInputPassword = hashPassword(inputPassword);
     return hashedInputPassword === storedPassword;
+}
+
+const validatePhoneNumber = (phoneNumber: string): boolean => {
+    return phoneNumber.length >= 10 && phoneNumber.length <= 20;
 }
