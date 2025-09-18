@@ -1,0 +1,28 @@
+{
+  "name": "efrei-my-contacts-back",
+  "version": "1.0.0",
+  "description": "The backend for mycontacts application",
+  "main": "server.ts",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Spokay",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.2",
+    "express": "^4.18.2",
+    "mongoose": "^7.3.1",
+    "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^24.5.2",
+    "eslint": "^8.40.0",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1"
+  }
+}
