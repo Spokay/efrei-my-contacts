@@ -1,6 +1,16 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { IContact, ContactSchema } from './Contact';
 
+export interface UserResponse {
+    _id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface IUser extends Document {
     _id: string;
     email: string;
@@ -40,7 +50,7 @@ const UserSchema: Schema = new Schema({
         type: String,
         trim: true
     },
-    contacts: [ContactSchema]
+    contacts: [ContactSchema],
 }, {
     timestamps: true
 });

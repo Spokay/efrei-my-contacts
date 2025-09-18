@@ -4,10 +4,8 @@ export interface AuthenticationRequest {
     password: string;
 }
 
-export interface RegistrationRequest {
+export interface RegistrationRequest extends AuthenticationRequest {
     firstName: string;
     lastName: string;
-    phoneNumber: string;
-    email: string;
-    password: string;
+    phone: string;
 }

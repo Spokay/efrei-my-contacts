@@ -2,7 +2,7 @@ import {AuthenticationRequest, RegistrationRequest} from "../models/auth/Authent
 import {IUser} from "../models/User";
 import {findUserByEmail} from "./user-service";
 import {generateToken} from "./token-service";
-import {hashPassword} from "../utils/password-utils";
+import {verifyPassword} from "../utils/password-utils";
 
 export const authenticate = async (authenticationRequest: AuthenticationRequest): Promise<string> => {
 
@@ -28,13 +28,9 @@ export const isRegistrationRequestValid = (registrationRequest: RegistrationRequ
         registrationRequest.password.length >= 0 &&
         registrationRequest.firstName.length > 0 &&
         registrationRequest.lastName.length > 0 &&
-        validatePhoneNumber(registrationRequest.phoneNumber);
+        validatePhoneNumber(registrationRequest.phone);
 }
 
-const verifyPassword = (inputPassword: string, storedPassword: string): boolean => {
-    const hashedInputPassword = hashPassword(inputPassword);
-    return hashedInputPassword === storedPassword;
-}
 
 const validatePhoneNumber = (phoneNumber: string): boolean => {
     return phoneNumber.length >= 10 && phoneNumber.length <= 20;

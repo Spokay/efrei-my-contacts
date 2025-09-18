@@ -24,7 +24,7 @@ const handleTokenValidationResult = (err: jwt.VerifyErrors | null, decoded: stri
 
 }
 
-const decodeToken = async (token: string): Promise<TokenPayload | null> => {
+export const decodeToken = async (token: string): Promise<TokenPayload | null> => {
     return jwt.decode(token) as TokenPayload;
 }
 
@@ -36,8 +36,6 @@ export const generateToken = async (user: IUser): Promise<string> => {
     const payload: TokenPayload = {
         sub: user._id,
         email: user.email,
-        exp: expirationTime,
-        iat: Math.floor(Date.now() / 1000)
     };
 
     return jwt.sign(
