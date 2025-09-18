@@ -20,8 +20,7 @@ export class DatabaseConnection {
         }
 
         try {
-            const mongoUri = MONGODB_URI;
-
+            const mongoUri: string | undefined = process.env.MONGODB_URI;
             if (!mongoUri) {
                 throw new Error('MONGODB_URI environment variable is not set');
             }
