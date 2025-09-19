@@ -8,8 +8,8 @@ export const findUserByEmail = async (email: string): Promise<IUser | null> => {
     return User.findOne({email: email.toLowerCase()});
 };
 
-export const findUserById = async (id: string): Promise<UserResponse | null> => {
-    return User.findById(id).then(mapToResponse);
+export const findUserById = async (userId: string): Promise<UserResponse | null> => {
+    return User.findById(userId).then(mapToUserResponse);
 }
 
 export const createUser = async (param: RegistrationRequest): Promise<string> => {
@@ -31,11 +31,32 @@ export const createUser = async (param: RegistrationRequest): Promise<string> =>
     return generateToken(savedUser);
 };
 
+export const getContacts = async (userId: string): Promise<IContact[] | null> => {
+    return User.findById(userId).then(mapToContacts);
+}
+
 export const userExistsByEmail = async (email: string): Promise<boolean> => {
     return await findUserByEmail(email).then(user => {return !!user})
 }
 
-const mapToResponse = (user: IUser | null): UserResponse | null => {
+export const addContact = async (user: IUser, contact: IContact): Promise<IContact | null> => {
+    user.contacts.push(contact);
+
+    const newUser = await user.save();
+
+    if (!newUser) {
+        throw new Error('Failed to add contact');
+    }
+
+    return contact;
+}
+
+export const estContactExistant = (newContact: IContact, user: IUser) => {
+    return user.contacts.map(mapToContactBasicInfo)
+        .includes(mapToContactBasicInfo(newContact));
+}
+
+const mapToUserResponse = (user: IUser | null): UserResponse | null => {
     if (!user) {
         return null;
     }
@@ -47,5 +68,21 @@ const mapToResponse = (user: IUser | null): UserResponse | null => {
         phone: user.phone,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt
+    }
+}
+
+const mapToContacts = (user: IUser | null): IContact[] | null => {
+    if (!user) {
+        return null
+    }
+    return user.contacts;
+}
+
+const mapToContactBasicInfo = (contact: IContact): IContact => {
+    return {
+        firstName: contact.firstName,
+        lastName: contact.lastName,
+        email: contact.email,
+        phone: contact.phone
     }
 }
