@@ -2,7 +2,7 @@ import {Schema} from 'mongoose';
 
 export interface IContact {
     _id?: string;
-    firstName: string;
+    firstName?: string;
     lastName?: string;
     email?: string;
     phone?: string;

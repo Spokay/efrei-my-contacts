@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import {AuthenticationRequest, RegistrationRequest} from "../models/auth/Authentication";
+import {AuthenticationRequest, RegistrationRequest} from "../models/auth/authentication";
 import {isAuthRequestValid, isRegistrationRequestValid, authenticate} from "../services/auth-service";
 import {createUser, userExistsByEmail} from "../services/user-service";
 

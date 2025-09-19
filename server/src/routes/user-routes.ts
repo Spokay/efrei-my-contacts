@@ -1,29 +1,36 @@
-import { Request, Response, Router } from 'express';
-import { decodeToken } from '../services/token-service';
-import { findUserById } from '../services/user-service';
+import {Request, Response, Router} from 'express';
+import {decodeToken} from '../services/token-service';
+import {estContactExistant, findUserById, getContacts} from '../services/user-service';
+import {TokenPayload} from "../models/auth/token";
+import {IContact} from "../models/contact";
+import {addContact} from "../services/user-service";
+import {User} from "../models/user";
 
 const userRoutes = Router();
 
 userRoutes.get('/me', async (req: Request, res: Response) => {
-    const authHeader: string | undefined = req.headers.authorization;
+    const tokenPayload: TokenPayload | null = await getTokenFromRequest(req, res);
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'Unauthorized' });
+    if(!tokenPayload || !tokenPayload.sub) {
+        res.status(401).json({ message: 'Invalid token' });
+        return null;
     }
 
-    const token = authHeader.split(' ')[1];
 
-    const decoded = await decodeToken(token);
-    if (!decoded || !decoded.sub) {
-        return res.status(401).json({ message: 'Invalid token' });
-    }
-
-    findUserById(decoded.sub)
+    findUserById(tokenPayload.sub)
         .then(user => {
             if (!user) {
                 res.status(404).json({ message: 'User not found' });
             } else {
                 res.status(200).json(JSON.stringify(user));
+                res.status(200).json(user);
+            }
+        })
+        .catch(error => {
+            return res.status(500).json({ message: 'Internal server error' });
+        });
+});
+
             }
         })
         .catch(error => {

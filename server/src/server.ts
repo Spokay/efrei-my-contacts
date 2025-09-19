@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import authRoutes from './routes/auth-routes';
 import userRoutes from './routes/user-routes';
+import {corsConfig} from './configuration/cors';
 import { databaseConnection } from './configuration/database';
 import { authMiddleware } from './middlewares/auth-middleware'
 import cors from 'cors';
@@ -11,9 +12,8 @@ import cors from 'cors';
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors(corsConfig));
 app.use(express.json());
-app.use(cors());
-app.use(express.urlencoded({ extended: true }));
 
 app.use('/auth', authRoutes);
 app.use(authMiddleware);

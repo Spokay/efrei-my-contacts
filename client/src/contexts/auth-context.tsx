@@ -1,6 +1,8 @@
-import React, {createContext, useState, useContext, useEffect, type ReactNode, useCallback} from 'react'
+import React, {createContext, type ReactNode, useContext, useEffect, useState} from 'react'
 import {AuthService, authService} from '../services/auth-service'
+import {UserService, userService} from '../services/user-service'
 import type {UserResponse} from '../services/dto/auth-dto'
+import {getTokenAndVerifyExpiration} from '../services/token-service'
 
 interface IAuth {
     user: UserResponse | null
@@ -15,78 +17,83 @@ interface IAuth {
     isAuthReady: boolean
 }
 
-const AuthContext = createContext<IAuth | undefined>(undefined)
+const AuthContext = createContext<IAuth | undefined>(undefined);
 
 export const AppAuthContextProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [user, setUser] = useState<UserResponse | null>(null)
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
-    const [loading, setLoading] = useState<boolean>(true)
-    const [isAuthReady, setIsAuthReady] = useState<boolean>(false)
+    const [user, setUser] = useState<UserResponse | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [isAuthReady, setIsAuthReady] = useState<boolean>(false);
 
-    const authServiceInstance: AuthService = authService
+    const authServiceInstance: AuthService = authService;
+    const userServiceInstance: UserService = userService;
 
     const handleConnection = async () => {
-        setLoading(true)
+        setLoading(true);
 
         return fetchUser()
             .catch(() => {
                 resetAuthState()
             })
             .finally(() => {
-                setLoading(false)
-                setIsAuthReady(true)
+                setLoading(false);
             })
     }
 
     const handleLogout = async () => {
-        setLoading(true)
+        setLoading(true);
 
         return authServiceInstance.logout()
             .then(() => {
-                resetAuthState()
+                resetAuthState();
             })
             .catch((error) => {
-                console.error('Logout error:', error)
-                resetAuthState()
+                console.error('Logout error:', error);
+                resetAuthState();
             })
             .finally(() => {
-                setLoading(false)
+                setLoading(false);
             })
     }
 
     const resetAuthState = () => {
-        setUser(null)
-        setIsAuthenticated(false)
+        setUser(null);
+        setIsAuthenticated(false);
     }
 
-    const fetchUser = useCallback(async () => {
-        return authServiceInstance.getUserInfo()
+    const fetchUser = async () => {
+        return userServiceInstance.getUserInfo()
             .then((user) => {
-                setUser(user)
-                setIsAuthenticated(true)
+                console.log('Fetched user info:', user);
+                setUser(user);
+                setIsAuthenticated(true);
             })
             .catch((error) => {
-                resetAuthState()
-                throw error
+                resetAuthState();
+                throw error;
             })
-    }, [authServiceInstance])
-
+    }
 
     useEffect(() => {
         const initializeAuth = async () => {
             try {
-                await fetchUser()
+                const token = await getTokenAndVerifyExpiration();
+                if (token) {
+                        await fetchUser();
+                } else {
+                    resetAuthState();
+                }
             } catch (error) {
-                console.error('Auth initialization error:', error)
-                resetAuthState()
+                console.error('Auth initialization error:', error);
+                resetAuthState();
             } finally {
-                setLoading(false)
-                setIsAuthReady(true)
+                setLoading(false);
+                setIsAuthReady(true);
             }
         }
 
-        initializeAuth().then()
-    }, [fetchUser])
+        initializeAuth().then();
+    }, [])
 
     return (
         <AuthContext.Provider
@@ -109,9 +116,9 @@ export const AppAuthContextProvider: React.FC<{ children: ReactNode }> = ({child
 }
 
 export const UseAuthContext = () => {
-    const context = useContext(AuthContext)
+    const context = useContext(AuthContext);
     if (context === undefined) {
-        throw new Error('UseAuthContext must be used within an AppProvider')
+        throw new Error('UseAuthContext must be used within an AppProvider');
     }
-    return context
+    return context;
 }

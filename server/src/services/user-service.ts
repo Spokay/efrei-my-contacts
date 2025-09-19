@@ -1,5 +1,6 @@
-import {IUser, User, UserResponse} from '../models/User';
-import {RegistrationRequest} from '../models/auth/Authentication';
+import {IUser, User, UserResponse} from '../models/user';
+import {IContact} from '../models/contact';
+import {RegistrationRequest} from '../models/auth/authentication';
 import {hashPassword} from '../utils/password-utils';
 import {generateToken} from './token-service';
 

@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { IContact, ContactSchema } from './Contact';
+import { IContact, ContactSchema } from './contact';
 
 export interface UserResponse {
     _id: string;

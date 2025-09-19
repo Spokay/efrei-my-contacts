@@ -1,22 +1,22 @@
-import type {AuthDto, RegisterRequest, TokenResponse, UserResponse} from "./dto/auth-dto";
+import type {AuthDto, RegisterRequest, TokenResponse} from "./dto/auth-dto";
 import {removeToken, storeToken} from "./token-service";
 import BaseService from "./base-service";
 
 export class AuthService extends BaseService{
 
-    AUTH_BASE_URL = '/api/auth'
+    AUTH_BASE_URL = '/auth'
 
     async authenticate(authDto: AuthDto): Promise<void> {
 
         return this.postData<TokenResponse>(
             `${this.AUTH_BASE_URL}/login`,
-            JSON.stringify(authDto)
+            authDto
         )
         .then(r => {
             return r.data
         })
         .then(async r => {
-            const token = r.access_token
+            const token = r.accessToken
             await storeToken(token)
             this.updateAuthToken(token)
         })
@@ -28,19 +28,24 @@ export class AuthService extends BaseService{
     async register(registerRequest: RegisterRequest): Promise<void> {
         return this.postData<TokenResponse>(
             `${this.AUTH_BASE_URL}/register`,
-            JSON.stringify(registerRequest)
+            registerRequest
         )
-        .then(r => r.data)
+        .then(r => {
+            return r.data
+        })
         .then(async r => {
-            const token = r.access_token
+            if (!r.accessToken) {
+                throw new Error('No access token in response')
+            }
+
+            const token = r.accessToken
             await storeToken(token)
             this.updateAuthToken(token)
         })
-    }
-
-    async getUserInfo(): Promise<UserResponse> {
-        return this.fetchData<UserResponse>(`${this.AUTH_BASE_URL}/me`)
-            .then(r => r.data)
+        .catch(error => {
+            console.error('Registration failed:', error)
+            throw error
+        })
     }
 
     async logout(): Promise<void> {

@@ -1,5 +1,5 @@
-import {TokenPayload} from '../models/auth/Token';
-import {IUser} from '../models/User';
+import {TokenPayload} from '../models/auth/token';
+import {IUser} from '../models/user';
 import {JWT_ALGORITHM, JWT_EXP, JWT_SECRET} from '../configuration/config';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 

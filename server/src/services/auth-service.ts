@@ -1,5 +1,5 @@
-import {AuthenticationRequest, RegistrationRequest} from "../models/auth/Authentication";
-import {IUser} from "../models/User";
+import {AuthenticationRequest, RegistrationRequest} from "../models/auth/authentication";
+import {IUser} from "../models/user";
 import {findUserByEmail} from "./user-service";
 import {generateToken} from "./token-service";
 import {verifyPassword} from "../utils/password-utils";

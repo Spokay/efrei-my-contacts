@@ -1,26 +1,29 @@
 import type {BaseResponse} from "../base-service";
 
 interface AuthDto {
-    email: string
-    password: string
+    email: string;
+    password: string;
 }
 
 interface RegisterRequest extends AuthDto {
-    firstName: string
-    lastName: string
-    phone: string
+    firstName: string;
+    lastName: string;
+    phone: string;
 }
 
 interface TokenResponse extends BaseResponse{
-    access_token: string
-    token_type: string
+    accessToken: string;
+    tokenType: string;
 }
 
 interface UserResponse extends BaseResponse{
-    email: string
-    firstName: string
-    lastName: string
-    phone: string
+    _id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export type {

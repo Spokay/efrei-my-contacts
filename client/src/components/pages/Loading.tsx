@@ -2,18 +2,11 @@ import React, {useState} from "react";
 import {ClipLoader} from "react-spinners";
 
 export const Loading: React.FC = () => {
-    const [loading, setLoading] = useState(true);
-    const [color, setColor] = useState("#000000");
+    const [loading] = useState(true);
+    const [color] = useState("#000000");
 
     return (
-        <div className="sweet-loading">
-            <button onClick={() => setLoading(!loading)}>Toggle Loader</button>
-            <input
-                value={color}
-                onChange={(input) => setColor(input.target.value)}
-                placeholder="Color of the loader"
-            />
-
+        <div>
             <ClipLoader
                 color={color}
                 loading={loading}

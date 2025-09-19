@@ -38,17 +38,11 @@ class BaseService {
   async postData<BaseResponse>(url: string, data: object | string | FormData, content_type?: string): Promise<AxiosResponse<BaseResponse>> {
     return this.getClient()
         .then(client => {
-          if (data instanceof FormData) {
-            return client.postForm<BaseResponse>(
+            return client.post<BaseResponse>(
                 `${this.baseUrl}${url}`,
                 data,
                 content_type ? { headers: { 'Content-Type': content_type } } : {}
             )
-          }
-          return client.post<BaseResponse>(
-              `${this.baseUrl}${url}`,
-              data
-          );
         })
   }
 
@@ -74,6 +68,7 @@ class BaseService {
     return getToken()
         .then(token => {
           if (token) {
+              console.log("Loaded token:", token)
             verifyTokenExpiration(token)
                 .then((result) => {
                   this.updateAuthToken(result)
