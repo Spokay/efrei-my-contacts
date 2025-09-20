@@ -73,11 +73,51 @@ userRoutes.post('/me/contacts', async (req: Request, res: Response) => {
 });
 
 userRoutes.put('/me/contacts/:contactId', async (req: Request, res: Response) => {
+    const tokenPayload: TokenPayload = await getTokenPayloadFromRequest(req, res);
+    const contactId: string = req.params.contactId;
 
+    const updatedContact: IContact = req.body as IContact;
+
+    const user = await User.findById(tokenPayload.sub);
+
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (estContactExistant(updatedContact, user)) {
+        return res.status(409).json({ message: 'Contact already exists' });
+    }
+
+    editContact(user, contactId, updatedContact)
+        .then(newContact => {
+            if (!newContact) {
+                return res.status(404).json({ message: 'Contact not found' });
+            }
+            res.status(200).json(newContact);
+        }).catch(err => {
+            console.error(err);
+            res.status(500).json({ message: 'Internal server error' });
+        });
 });
 
 userRoutes.delete('/me/contacts/:contactId', async (req: Request, res: Response) => {
+    const tokenPayload: TokenPayload = await getTokenPayloadFromRequest(req, res);
+    const contactId = req.params.contactId;
 
+    const user = await User.findById(tokenPayload.sub);
+
+
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    deleteContact(user, contactId)
+        .then(() => {
+            res.status(204).send();
+        }).catch(err => {
+            console.error(err);
+            res.status(500).json({ message: 'Internal server error' });
+        });
 });
 
 const getTokenPayloadFromRequest = async (req: Request, res: Response): Promise<TokenPayload> => {
