@@ -8,12 +8,18 @@ import {corsConfig} from './configuration/cors';
 import { databaseConnection } from './configuration/database';
 import { authMiddleware } from './middlewares/auth-middleware'
 import cors from 'cors';
+import { swaggerUi, swaggerOptions, swaggerDocument } from './configuration/api-docs';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors(corsConfig));
 app.use(express.json());
+
+app.use('/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument, swaggerOptions)
+);
 
 app.use('/auth', authRoutes);
 app.use(authMiddleware);

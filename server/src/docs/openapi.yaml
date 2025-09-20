@@ -1,0 +1,456 @@
+openapi: 3.0.3
+info:
+  title: EFREI My Contacts API
+  description: A contact management API with JWT-based authentication
+  version: 1.0.0
+  contact:
+    name: EFREI My Contacts
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://efrei-my-contacts.onrender.com
+    description: Production server
+
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    AuthenticationRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          minLength: 6
+          example: "password123"
+
+    RegistrationRequest:
+      allOf:
+        - $ref: '#/components/schemas/AuthenticationRequest'
+        - type: object
+          required:
+            - firstName
+            - lastName
+            - phone
+          properties:
+            firstName:
+              type: string
+              example: "John"
+            lastName:
+              type: string
+              example: "Doe"
+            phone:
+              type: string
+              minLength: 10
+              maxLength: 20
+              example: "0123456789"
+
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        tokenType:
+          type: string
+          example: "Bearer"
+
+    Contact:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        firstName:
+          type: string
+          example: "Jane"
+        lastName:
+          type: string
+          example: "Smith"
+        email:
+          type: string
+          format: email
+          example: "jane.smith@example.com"
+        phone:
+          type: string
+          example: "0987654321"
+
+    ContactInput:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "Jane"
+        lastName:
+          type: string
+          example: "Smith"
+        email:
+          type: string
+          format: email
+          example: "jane.smith@example.com"
+        phone:
+          type: string
+          minLength: 10
+          maxLength: 20
+          example: "0987654321"
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        phone:
+          type: string
+          example: "0123456789"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00.000Z"
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error message"
+        details:
+          type: array
+          items:
+            type: string
+          example: ["Validation error details"]
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Bad request"
+        details:
+          type: array
+          items:
+            type: string
+          example: ["The phone number must be between 10 and 20 characters"]
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user
+      description: Login with email and password to get an access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      description: Create a new user account and get an access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Invalid registration request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User with this email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/me:
+    get:
+      tags:
+        - User
+      summary: Get current user profile
+      description: Get the authenticated user's profile information
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/me/contacts:
+    get:
+      tags:
+        - Contacts
+      summary: Get user's contacts
+      description: Retrieve all contacts for the authenticated user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Contacts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Contacts
+      summary: Create new contact
+      description: Add a new contact to the authenticated user's contact list
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+      responses:
+        '201':
+          description: Contact created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '400':
+          description: Invalid contact data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Contact already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/me/contacts/{contactId}:
+    put:
+      tags:
+        - Contacts
+      summary: Update contact
+      description: Update an existing contact for the authenticated user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: contactId
+          in: path
+          required: true
+          description: ID of the contact to update
+          schema:
+            type: string
+            example: "507f1f77bcf86cd799439011"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+      responses:
+        '200':
+          description: Contact updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '400':
+          description: Invalid contact data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or contact not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Contact already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Contacts
+      summary: Delete contact
+      description: Delete a contact from the authenticated user's contact list
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: contactId
+          in: path
+          required: true
+          description: ID of the contact to delete
+          schema:
+            type: string
+            example: "507f1f77bcf86cd799439011"
+      responses:
+        '204':
+          description: Contact deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or contact not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: User
+    description: User profile management
+  - name: Contacts
+    description: Contact management operations
