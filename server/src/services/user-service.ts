@@ -1,5 +1,5 @@
 import {IUser, User, UserResponse} from '../models/user';
-import {IContact} from '../models/contact';
+import {IContact, ContactValidation} from '../models/contact';
 import {RegistrationRequest} from '../models/auth/authentication';
 import {hashPassword} from '../utils/password-utils';
 import {generateToken} from './token-service';
@@ -40,38 +40,34 @@ export const userExistsByEmail = async (email: string): Promise<boolean> => {
 }
 
 export const addContact = async (user: IUser, contact: IContact): Promise<IContact | null> => {
-    user.contacts.push(contact);
+    const newContact = user.contacts.create(contact);
+    user.contacts.push(newContact);
 
-    const newUser = await user.save();
+    const savedUser = await user.save();
 
-    if (!newUser) {
+    if (!savedUser) {
         throw new Error('Failed to add contact');
     }
 
-    return contact;
+    return newContact;
 }
 
 export const editContact = async (user: IUser, contactId: string, updatedContact: IContact): Promise<IContact | null> => {
-    const contactIndex = user.contacts.findIndex(c => c._id?.toString() === contactId);
+    const contact = user.contacts.id(contactId);
 
-    if (contactIndex === -1) {
+    if (!contact) {
         throw new Error('Contact not found');
     }
 
-    user.contacts[contactIndex] = {
-        ...user.contacts[contactIndex],
-        ...updatedContact
-    }
+    contact.set(updatedContact);
 
-    console.log(user.contacts);
+    const savedUser = await user.save();
 
-    const newUser = await user.save();
-
-    if (!newUser) {
+    if (!savedUser) {
         throw new Error('Failed to edit contact');
     }
 
-    return user.contacts[contactIndex];
+    return contact;
 }
 
 
@@ -94,6 +90,21 @@ export const deleteContact = async (user: IUser, contactId: string): Promise<voi
 export const estContactExistant = (newContact: IContact, user: IUser) => {
     return user.contacts.map(mapToContactBasicInfo)
         .includes(mapToContactBasicInfo(newContact));
+}
+
+export const validateNewContact = (contact: IContact): ContactValidation => {
+
+    const validationResult: ContactValidation = {
+        isValid: true,
+        errors: []
+    }
+
+    if (contact.phone && !isPhoneValid(contact.phone)){
+        validationResult.isValid = false;
+        validationResult.errors.push("The phone number must be between 10 and 20 characters")
+    }
+
+    return validationResult
 }
 
 const mapToUserResponse = (user: IUser | null): UserResponse | null => {
@@ -125,4 +136,8 @@ const mapToContactBasicInfo = (contact: IContact): IContact => {
         email: contact.email,
         phone: contact.phone
     }
+}
+
+const isPhoneValid = (phone: string) => {
+    return phone.length >= 10 && phone.length <= 20
 }

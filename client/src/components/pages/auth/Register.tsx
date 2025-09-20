@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import { UseAuthContext } from '../../../contexts/auth-context';
 import type { RegisterRequest } from '../../../services/dto/auth-dto';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const Register = () => {
     const { authService, handleConnection, loading } = UseAuthContext();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState<RegisterRequest>({
         email: '',
         password: '',
@@ -38,6 +39,9 @@ const Register = () => {
             .then(() => {
                 console.log('Registration successful');
                 return handleConnection();
+            })
+            .then(() => {
+                navigate('/');
             })
             .catch(err => {
                 console.error('Registration error:', err);

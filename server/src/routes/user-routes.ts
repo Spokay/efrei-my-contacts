@@ -5,10 +5,11 @@ import {
     editContact,
     estContactExistant,
     findUserById,
-    getContacts
+    getContacts,
+    validateNewContact
 } from '../services/user-service';
 import {TokenPayload} from "../models/auth/token";
-import {IContact} from "../models/contact";
+import {IContact, ContactValidation} from "../models/contact";
 import {User} from "../models/user";
 
 const userRoutes = Router();
@@ -57,6 +58,12 @@ userRoutes.post('/me/contacts', async (req: Request, res: Response) => {
 
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
+    }
+
+    const newUserValidation: ContactValidation = validateNewContact(newContact);
+
+    if (!newUserValidation.isValid){
+        return res.status(400).json({message: 'Bad request', details: newUserValidation.errors})
     }
 
     if (estContactExistant(newContact, user)) {

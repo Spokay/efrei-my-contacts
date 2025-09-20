@@ -74,7 +74,11 @@ const Home: React.FC = () => {
                                 <button onClick={() => openModal(contact)}>Modifier</button>
                             </td>
                             <td>
-                                <button onClick={() => deleteContact(contact._id)}>Supprimer</button>
+                                <button onClick={
+                                    () =>
+                                        confirm("Êtes-vous sûr de vouloir supprimer ce contact ?")
+                                        && deleteContact(contact._id)
+                                }>Supprimer</button>
                             </td>
                         </tr>
                     )

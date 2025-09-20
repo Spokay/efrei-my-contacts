@@ -17,7 +17,10 @@ export const useContacts = () => {
             setEditModalContact(contact);
         setIsModalOpen(true);
     };
-    const closeModal = () => setIsModalOpen(false);
+    const closeModal = () => {
+        setEditModalContact(null);
+        setIsModalOpen(false);
+    };
 
     const userServiceInstance = userService;
 
@@ -45,6 +48,7 @@ export const useContacts = () => {
                     contact._id === id ? newContact : contact
                 );
                 setContacts(newContacts);
+                closeModal();
             })
             .catch(err => {
                 console.error(err)

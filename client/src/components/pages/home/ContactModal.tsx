@@ -21,8 +21,10 @@ export const ContactModalForm: React.FC<ContactModalProps> = (props) => {
         });
 
     useEffect(() => {
-        fillFieldsIfEdit(props.editModalContact, setFormData);
-    })
+        if (props.editModalContact) {
+            setFormData(props.editModalContact);
+        }
+    }, [props.editModalContact]);
 
     const [error, setError] = useState<string>('');
 
@@ -43,6 +45,7 @@ export const ContactModalForm: React.FC<ContactModalProps> = (props) => {
         }
         if (formData.phone && !validatePhone(formData.phone)) {
             setError('Le numéro de téléphone doit contenir entre 10 et 20 caractères');
+            return false;
         }
         return true;
     }
@@ -83,21 +86,23 @@ export const ContactModalForm: React.FC<ContactModalProps> = (props) => {
                 <label htmlFor="firstName">
                     Prénom:
                 </label>
-                <input type="text" name="firstName" id="firstName" onInput={handleInputChange}/>
+                <input type="text" name="firstName" id="firstName" value={formData.firstName} onChange={handleInputChange}/>
                 <label htmlFor="lastName">
                     Nom:
                 </label>
-                <input type="text" name="lastName" onInput={handleInputChange}/>
+                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange}/>
                 <label htmlFor="email">
                     Email:
                 </label>
-                <input type="text" name="email" onInput={handleInputChange}/>
+                <input type="text" name="email" value={formData.email} onChange={handleInputChange}/>
                 <label htmlFor="phone">
                     Téléphone:
                 </label>
-                <input type="tel" name="phone" onInput={handleInputChange}/>
+                <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange}/>
 
-                <input type="submit" value="Ajouter le contact"/>
+                <input type="submit" value={
+                    props.editModalContact ? 'Modifier le contact' : 'Ajouter le contact'
+                }/>
             </form>
 
             <button onClick={props.closeModal}>
@@ -108,16 +113,9 @@ export const ContactModalForm: React.FC<ContactModalProps> = (props) => {
 }
 
 const areAllFieldEmpty = (formData: Contact) => {
-    console.log(formData);
-    return formData.firstName == '' || formData.lastName == '' || formData.email == '' || formData.phone == '';
+    return formData.firstName == '' && formData.lastName == '' && formData.email == '' && formData.phone == '';
 }
 
 const validatePhone = (phone: string) => {
     return phone.length >= 10 && phone.length <= 20;
-}
-
-const fillFieldsIfEdit = (contact: Contact | null, setFormData: React.Dispatch<React.SetStateAction<Contact>>) => {
-    if (contact) {
-        setFormData(contact);
-    }
 }

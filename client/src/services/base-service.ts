@@ -68,7 +68,6 @@ class BaseService {
     return getToken()
         .then(token => {
           if (token) {
-              console.log("Loaded token:", token)
             verifyTokenExpiration(token)
                 .then((result) => {
                   this.updateAuthToken(result)

@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 import { IContact, ContactSchema } from './contact';
 
 export interface UserResponse {
@@ -18,7 +18,7 @@ export interface IUser extends Document {
     firstName: string;
     lastName: string;
     phone: string;
-    contacts: IContact[];
+    contacts: Types.DocumentArray<IContact>;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -64,7 +64,6 @@ export const AppAuthContextProvider: React.FC<{ children: ReactNode }> = ({child
     const fetchUser = async () => {
         return userServiceInstance.getUserInfo()
             .then((user) => {
-                console.log('Fetched user info:', user);
                 setUser(user);
                 setIsAuthenticated(true);
             })

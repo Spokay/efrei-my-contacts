@@ -8,11 +8,14 @@ export interface IContact {
     phone?: string;
 }
 
+export interface ContactValidation {
+    isValid: boolean,
+    errors: string[]
+}
 
 export const ContactSchema: Schema = new Schema({
     firstName: {
         type: String,
-        required: true,
         trim: true
     },
     lastName: {

@@ -29,7 +29,6 @@ const getTokenAndVerifyExpiration = async (): Promise<string | null> => {
 const isTokenExpired = (token: string): boolean => {
     if (token) {
         const decoded = jwtDecode(token)
-        console.log("Decoded token for exp check:", decoded)
         if (!decoded.exp) {
             return true
         }
