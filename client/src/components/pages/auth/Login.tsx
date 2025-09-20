@@ -78,11 +78,10 @@ const Login = () => {
                     <button type="submit" disabled={loading}>
                         {loading ? 'Connexion en cours' : 'Se connecter'}
                     </button>
-
-                    <Link to={"/register"}>
-                        Pas encore de compte ? Inscrivez-vous
-                    </Link>
                 </form>
+                <Link to={"/register"}>
+                    Pas encore de compte ? Inscrivez-vous
+                </Link>
             </div>
         </div>
     );

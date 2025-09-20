@@ -1,12 +1,13 @@
 import React, {useState} from "react";
 import {ClipLoader} from "react-spinners";
+import './Loading.css'
 
 export const Loading: React.FC = () => {
     const [loading] = useState(true);
     const [color] = useState("#000000");
 
     return (
-        <div>
+        <div className="loading-container">
             <ClipLoader
                 color={color}
                 loading={loading}

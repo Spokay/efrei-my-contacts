@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { UseAuthContext } from '../../contexts/auth-context';
+import './Navbar.css';
 
 const Navbar: React.FC = () => {
     const { user, logout } = UseAuthContext();
@@ -10,7 +11,7 @@ const Navbar: React.FC = () => {
 
     return (
         <nav className="navbar">
-            <div className="navbar-brand">
+            <div className="app-name">
                 <Link to="/">EFREI My Contacts</Link>
             </div>
 

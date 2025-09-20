@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import type {Contact} from '../../../services/dto/contact-dto'
 import {useEffect} from "react";
+import './ContactModal.css';
 
 interface ContactModalProps {
     isModalOpen: boolean
@@ -76,38 +77,47 @@ export const ContactModalForm: React.FC<ContactModalProps> = (props) => {
     }
 
     return (
-        <div>
-            {error && error != '' && (
-                <div className="error-message">
-                    {error}
-                </div>
-            )}
-            <form onSubmit={props.editModalContact ? editContact : createContact}>
-                <label htmlFor="firstName">
-                    Prénom:
-                </label>
-                <input type="text" name="firstName" id="firstName" value={formData.firstName} onChange={handleInputChange}/>
-                <label htmlFor="lastName">
-                    Nom:
-                </label>
-                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange}/>
-                <label htmlFor="email">
-                    Email:
-                </label>
-                <input type="text" name="email" value={formData.email} onChange={handleInputChange}/>
-                <label htmlFor="phone">
-                    Téléphone:
-                </label>
-                <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange}/>
+        <div className="modal-overlay" onClick={props.closeModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <h2>{props.editModalContact ? 'Modifier le contact' : 'Ajouter un contact'}</h2>
 
-                <input type="submit" value={
-                    props.editModalContact ? 'Modifier le contact' : 'Ajouter le contact'
-                }/>
-            </form>
+                {error && error != '' && (
+                    <div className="error-message">
+                        {error}
+                    </div>
+                )}
 
-            <button onClick={props.closeModal}>
-                Annuler
-            </button>
+                <form onSubmit={props.editModalContact ? editContact : createContact}>
+                    <div>
+                        <label htmlFor="firstName">Prénom:</label>
+                        <input type="text" name="firstName" id="firstName" value={formData.firstName} onChange={handleInputChange}/>
+                    </div>
+
+                    <div>
+                        <label htmlFor="lastName">Nom:</label>
+                        <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange}/>
+                    </div>
+
+                    <div>
+                        <label htmlFor="email">Email:</label>
+                        <input type="text" name="email" value={formData.email} onChange={handleInputChange}/>
+                    </div>
+
+                    <div>
+                        <label htmlFor="phone">Téléphone:</label>
+                        <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange}/>
+                    </div>
+
+                    <div className="modal-buttons">
+                        <button type="submit">
+                            {props.editModalContact ? 'Modifier le contact' : 'Ajouter le contact'}
+                        </button>
+                        <button type="button" onClick={props.closeModal}>
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }
