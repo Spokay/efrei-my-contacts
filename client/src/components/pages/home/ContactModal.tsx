@@ -1,13 +1,17 @@
 import React, {useState} from 'react'
-import type {Contact} from '../services/dto/contact-dto'
+import type {Contact} from '../../../services/dto/contact-dto'
+import {useEffect} from "react";
 
-interface AddContactModalProps {
-    addContact: (contact: Contact) => void
-    closeModal: () => void
+interface ContactModalProps {
     isModalOpen: boolean
+    closeModal: () => void
+    addContact: (contact: Contact) => void
+    editContact?: (id: string, updatedContact: Contact) => void
+    editModalContact: Contact | null
+    setEditModalContact?: (contact: Contact | null) => void
 }
 
-export const AddContactModal: React.FC<AddContactModalProps> = (props) => {
+export const ContactModalForm: React.FC<ContactModalProps> = (props) => {
 
     const [formData, setFormData] = useState<Contact>({
             firstName: '',
@@ -15,6 +19,10 @@ export const AddContactModal: React.FC<AddContactModalProps> = (props) => {
             email: '',
             phone: ''
         });
+
+    useEffect(() => {
+        fillFieldsIfEdit(props.editModalContact, setFormData);
+    })
 
     const [error, setError] = useState<string>('');
 
@@ -49,6 +57,21 @@ export const AddContactModal: React.FC<AddContactModalProps> = (props) => {
         props.addContact(formData);
     }
 
+    const editContact = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (!props.editModalContact || !props.editModalContact._id || !props.editContact) {
+            setError('Erreur lors de la modification du contact');
+            return;
+        }
+
+        if (!validateFormFields(formData)) {
+            return;
+        }
+
+        props.editContact(props.editModalContact._id, formData);
+    }
+
     return (
         <div>
             {error && error != '' && (
@@ -56,7 +79,7 @@ export const AddContactModal: React.FC<AddContactModalProps> = (props) => {
                     {error}
                 </div>
             )}
-            <form onSubmit={createContact}>
+            <form onSubmit={props.editModalContact ? editContact : createContact}>
                 <label htmlFor="firstName">
                     Prénom:
                 </label>
@@ -91,4 +114,10 @@ const areAllFieldEmpty = (formData: Contact) => {
 
 const validatePhone = (phone: string) => {
     return phone.length >= 10 && phone.length <= 20;
+}
+
+const fillFieldsIfEdit = (contact: Contact | null, setFormData: React.Dispatch<React.SetStateAction<Contact>>) => {
+    if (contact) {
+        setFormData(contact);
+    }
 }

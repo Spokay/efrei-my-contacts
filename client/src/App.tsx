@@ -1,10 +1,10 @@
 import './App.css'
 import {AppAuthContextProvider, UseAuthContext} from "./contexts/auth-context.tsx";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Home from "./components/pages/Home.tsx";
+import Home from "./components/pages/home/Home.tsx";
 import Profile from "./components/pages/Profile.tsx";
 import Layout from "./components/layout/Layout.tsx";
-import {Loading} from "./components/pages/Loading.tsx";
+import {Loading} from "./components/common/Loading.tsx";
 import Register from "./components/pages/auth/Register.tsx";
 import Login from "./components/pages/auth/Login.tsx";
 

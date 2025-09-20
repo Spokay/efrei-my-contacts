@@ -1,5 +1,5 @@
 import React from 'react';
-import {Loading} from './Loading';
+import {Loading} from '../common/Loading';
 import { UseAuthContext } from '../../contexts/auth-context';
 
 const Profile: React.FC = () => {

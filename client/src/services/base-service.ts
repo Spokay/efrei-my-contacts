@@ -53,7 +53,7 @@ class BaseService {
     })
   }
 
-  async putData<BaseResponse>(url: string, data: never, content_type?: string): Promise<AxiosResponse<BaseResponse>> {
+  async putData<BaseResponse>(url: string, data: object | string | FormData, content_type?: string): Promise<AxiosResponse<BaseResponse>> {
     return this.getClient()
         .then(client => {
           return client.put<BaseResponse>(

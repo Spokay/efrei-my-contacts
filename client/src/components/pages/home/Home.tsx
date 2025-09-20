@@ -1,44 +1,33 @@
-import React, {useEffect, useState} from 'react';
-import type {Contact} from '../../services/dto/contact-dto';
-import {userService} from '../../services/user-service';
-import {Loading} from "./Loading";
-import {AddContactModal} from "../AddContactModal";
+import React, {useEffect} from 'react';
+import type {Contact} from '../../../services/dto/contact-dto';
+import {Loading} from "../../common/Loading";
+import {ContactModalForm} from "./ContactModal";
+import {useContacts} from "./hooks/Contact.hooks";
 
 const Home: React.FC = () => {
 
-    const [contacts, setContacts] = useState<Array<Contact> | null>(null);
-
-    const [error, setError] = useState<string | null>(null);
-
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
-
-    const userServiceInstance = userService;
-
-    const addContact = (contact: Contact) => {
-        userServiceInstance.addContact(contact)
-            .then((newContact: Contact) => {
-                setContacts(
-                    prevContacts => prevContacts
-                        ? [...prevContacts, newContact]
-                        : [newContact]
-                );
-                closeModal();
-            })
-            .catch((err) => {
-                console.error(err);
-                setError('Erreur lors de l\'ajout du contact');
-            });
-    }
+    const {
+        userServiceInstance,
+        addContact,
+        contacts,
+        setContacts,
+        error,
+        setError,
+        isModalOpen,
+        openModal,
+        closeModal,
+        editContact,
+        deleteContact,
+        editModalContact,
+        setEditModalContact
+    } = useContacts();
 
     useEffect(() => {
         userServiceInstance.getContacts()
-            .then((contacts) => {
+            .then((contacts: Contact[]) => {
                 setContacts(contacts);
             })
-            .catch((err) => {
+            .catch((err: any) => {
                 console.error(err);
                 setError('Erreur lors de la récupération des contacts');
             });
@@ -51,14 +40,17 @@ const Home: React.FC = () => {
     return (
         <div>
             <h1>Contacts</h1>
-            <button onClick={openModal}>
+            <button onClick={() => openModal()}>
                 Ajouter un contact
             </button>
             {isModalOpen && (
-                <AddContactModal
+                <ContactModalForm
                     isModalOpen={isModalOpen}
                     closeModal={closeModal}
                     addContact={addContact}
+                    editContact={editContact}
+                    editModalContact={editModalContact}
+                    setEditModalContact={setEditModalContact}
                 />
             )}
             <table>
@@ -67,6 +59,8 @@ const Home: React.FC = () => {
                         <th>Nom Prénom</th>
                         <th>Email</th>
                         <th>Téléphone</th>
+                        <th>Modifier</th>
+                        <th>Supprimer</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -76,12 +70,18 @@ const Home: React.FC = () => {
                             <td>{contact.firstName} {contact.lastName}</td>
                             <td>{contact.email}</td>
                             <td>{contact.phone}</td>
+                            <td>
+                                <button onClick={() => openModal(contact)}>Modifier</button>
+                            </td>
+                            <td>
+                                <button onClick={() => deleteContact(contact._id)}>Supprimer</button>
+                            </td>
                         </tr>
                     )
                 ) : error ? (
-                    <div>{error}</div>
+                    <tr><td>{error}</td></tr>
                 ) : (
-                    <div>Aucun contact</div>
+                    <tr><td>Aucun contact</td></tr>
                 )}
                 </tbody>
             </table>

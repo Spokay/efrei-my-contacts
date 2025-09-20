@@ -19,6 +19,16 @@ export class UserService extends BaseService {
         return this.postData<Contact>(`${this.USER_BASE_URL}/me/contacts`, contact)
             .then(r => r.data);
     }
+
+    async editContact(id: string, updatedContact: Contact): Promise<Contact> {
+        return this.putData<Contact>(`${this.USER_BASE_URL}/me/contacts/${id}`, updatedContact)
+            .then(r => r.data);
+    }
+
+    async deleteContact(id: string): Promise<void> {
+        return this.deleteData(`${this.USER_BASE_URL}/me/contacts/${id}`)
+            .then(_ => {});
+    }
 }
 
 export const userService = new UserService();
