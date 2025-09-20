@@ -81,6 +81,10 @@ userRoutes.post('/me/contacts', async (req: Request, res: Response) => {
     });
 });
 
+userRoutes.put('/me/contacts/:contactId', async (req: Request, res: Response) => {
+
+});
+
 userRoutes.delete('/me/contacts/:contactId', async (req: Request, res: Response) => {
 
 });

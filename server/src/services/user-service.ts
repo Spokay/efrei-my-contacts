@@ -51,6 +51,46 @@ export const addContact = async (user: IUser, contact: IContact): Promise<IConta
     return contact;
 }
 
+export const editContact = async (user: IUser, contactId: string, updatedContact: IContact): Promise<IContact | null> => {
+    const contactIndex = user.contacts.findIndex(c => c._id?.toString() === contactId);
+
+    if (contactIndex === -1) {
+        throw new Error('Contact not found');
+    }
+
+    user.contacts[contactIndex] = {
+        ...user.contacts[contactIndex],
+        ...updatedContact
+    }
+
+    console.log(user.contacts);
+
+    const newUser = await user.save();
+
+    if (!newUser) {
+        throw new Error('Failed to edit contact');
+    }
+
+    return user.contacts[contactIndex];
+}
+
+
+export const deleteContact = async (user: IUser, contactId: string): Promise<void> => {
+    const contactIndex = user.contacts.findIndex(c => c._id?.toString() === contactId);
+
+    if (contactIndex === -1) {
+        throw new Error('Contact not found');
+    }
+
+    user.contacts.splice(contactIndex, 1);
+
+    const newUser = await user.save();
+
+    if (!newUser) {
+        throw new Error('Failed to delete contact');
+    }
+}
+
 export const estContactExistant = (newContact: IContact, user: IUser) => {
     return user.contacts.map(mapToContactBasicInfo)
         .includes(mapToContactBasicInfo(newContact));
