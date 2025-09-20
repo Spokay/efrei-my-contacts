@@ -1,21 +1,20 @@
 import {Request, Response, Router} from 'express';
-import {decodeToken} from '../services/token-service';
-import {estContactExistant, findUserById, getContacts} from '../services/user-service';
+import {
+    addContact,
+    deleteContact,
+    editContact,
+    estContactExistant,
+    findUserById,
+    getContacts
+} from '../services/user-service';
 import {TokenPayload} from "../models/auth/token";
 import {IContact} from "../models/contact";
-import {addContact} from "../services/user-service";
 import {User} from "../models/user";
 
 const userRoutes = Router();
 
 userRoutes.get('/me', async (req: Request, res: Response) => {
-    const tokenPayload: TokenPayload | null = await getTokenFromRequest(req, res);
-
-    if(!tokenPayload || !tokenPayload.sub) {
-        res.status(401).json({ message: 'Invalid token' });
-        return null;
-    }
-
+    const tokenPayload: TokenPayload = await getTokenPayloadFromRequest(req, res);
 
     findUserById(tokenPayload.sub)
         .then(user => {
@@ -32,12 +31,7 @@ userRoutes.get('/me', async (req: Request, res: Response) => {
 
 
 userRoutes.get('/me/contacts', async (req: Request, res: Response) => {
-    const tokenPayload: TokenPayload | null = await getTokenFromRequest(req, res);
-
-    if(!tokenPayload || !tokenPayload.sub) {
-        res.status(401).json({ message: 'Invalid token' });
-        return null;
-    }
+    const tokenPayload: TokenPayload = await getTokenPayloadFromRequest(req, res);
 
     getContacts(tokenPayload.sub)
         .then(contacts => {
@@ -47,22 +41,19 @@ userRoutes.get('/me/contacts', async (req: Request, res: Response) => {
                 res.status(200).json(contacts);
             }
         })
-        .catch(error => {
+        .catch(err => {
+            console.error(err);
             return res.status(500).json({ message: 'Internal server error' });
         });
 });
 
 
 userRoutes.post('/me/contacts', async (req: Request, res: Response) => {
-    const tokenPayload: TokenPayload | null = await getTokenFromRequest(req, res);
-
-    if(!tokenPayload || !tokenPayload.sub) {
-        res.status(401).json({ message: 'Invalid token' });
-    }
+    const tokenPayload: TokenPayload = await getTokenPayloadFromRequest(req, res);
 
     const newContact = req.body as IContact
 
-    const user = await User.findById(tokenPayload!.sub);
+    const user = await User.findById(tokenPayload.sub);
 
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
@@ -89,12 +80,14 @@ userRoutes.delete('/me/contacts/:contactId', async (req: Request, res: Response)
 
 });
 
-const getTokenFromRequest = async (req: Request, res: Response): Promise<TokenPayload | null> => {
-    const authHeader: string | undefined = req.headers.authorization;
+const getTokenPayloadFromRequest = async (req: Request, res: Response): Promise<TokenPayload> => {
+    const tokenPayload: TokenPayload | undefined = req.tokenPayload;
 
-    const token = authHeader!.split(' ')[1];
-
-    return await decodeToken(token);
+    if (tokenPayload && tokenPayload.sub) {
+        return tokenPayload;
+    }
+    res.status(401).json({ message: 'Invalid token' }).send();
+    throw new Error('Invalid token');
 }
 
 export default userRoutes;

@@ -5,25 +5,23 @@ import jwt, {JwtPayload} from 'jsonwebtoken';
 
 const secretKey: string = JWT_SECRET;
 
-export const isTokenValid = async (token: string): Promise<boolean> => {
+export const validateToken = async (token: string): Promise<TokenPayload> => {
     return new Promise((resolve, reject) => {
         jwt.verify(
             token,
             secretKey,
-            (err, decoded) =>
-                resolve(handleTokenValidationResult(err, decoded))
+            (err, decoded) => {
+                if (err) {
+                    return reject("Invalid token");
+                }
+                if (decoded) {
+                    return resolve(decoded as TokenPayload);
+                }
+                return reject("Invalid token");
+            }
         );
     });
 }
-
-const handleTokenValidationResult = (err: jwt.VerifyErrors | null, decoded: string | JwtPayload | undefined): boolean => {
-    if (err) {
-        return false;
-    }
-    return !!decoded;
-
-}
-
 export const decodeToken = async (token: string): Promise<TokenPayload | null> => {
     return jwt.decode(token) as TokenPayload;
 }

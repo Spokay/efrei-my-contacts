@@ -1,9 +1,16 @@
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import {NextFunction, Request, RequestHandler, Response} from 'express';
+import {TokenPayload} from '../models/auth/token';
+import {validateToken} from "../services/token-service";
 
-import { isTokenValid } from '../services/token-service';
+declare global {
+    namespace Express {
+        interface Request {
+            tokenPayload?: TokenPayload;
+        }
+    }
+}
 
-export const authMiddleware: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
-
+export const authMiddleware: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader: string | undefined = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -12,10 +19,11 @@ export const authMiddleware: RequestHandler = (req: Request, res: Response, next
 
     const token = authHeader.split(' ')[1];
 
-    if (!isTokenValid(token)) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    next();
+    validateToken(token).then(tokenPayload => {
+        req.tokenPayload = tokenPayload;
+        next();
+    }).catch(err => {
+        return res.status(401).json({ message: 'Unauthorized', reason: err});
+    });
 };
 
