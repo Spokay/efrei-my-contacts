@@ -18,12 +18,15 @@ const Home = () => {
         closeModal,
         editContact,
         deleteContact,
+        toggleFavorite,
         editModalContact,
-        setEditModalContact
+        setEditModalContact,
+        showFavoritesOnly,
+        toggleShowFavoritesOnly
     } = useContacts();
 
     useEffect(() => {
-        userServiceInstance.getContacts()
+        userServiceInstance.getContacts(showFavoritesOnly)
             .then((contacts) => {
                 setContacts(contacts);
             })
@@ -31,7 +34,7 @@ const Home = () => {
                 console.error(err);
                 setError('Erreur lors de la récupération des contacts');
             });
-    }, []);
+    }, [showFavoritesOnly]);
 
     if (!contacts) {
         return <Loading />;
@@ -48,12 +51,19 @@ const Home = () => {
                     <button className="add-contact-btn" onClick={() => openModal()}>
                         + Ajouter un contact
                     </button>
+                    <button
+                        className={`favorites-filter-btn ${showFavoritesOnly ? 'active' : ''}`}
+                        onClick={toggleShowFavoritesOnly}
+                    >
+                        {showFavoritesOnly ? 'Afficher tous les contacts' : 'Afficher seulement les favoris'}
+                    </button>
                 </div>
 
                 <div className="table-wrapper">
                     <table className="contacts-table">
                         <thead>
                             <tr>
+                                <th>Favori</th>
                                 <th>Nom Prénom</th>
                                 <th>Email</th>
                                 <th>Téléphone</th>
@@ -64,6 +74,23 @@ const Home = () => {
                         {(contacts && contacts.length > 0) ? contacts.map((contact, index) =>
                             (
                                 <tr key={index}>
+                                    <td>
+                                        <button
+                                            className="star-btn"
+                                            onClick={() => toggleFavorite(contact._id)}
+                                            aria-label={contact.isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+                                        >
+                                            <img
+                                                src={
+                                                    contact.isFavorite
+                                                        ? "/assets/images/star-filled.svg"
+                                                        : "/assets/images/star.svg"
+                                                }
+                                                alt="Icone d'étoile"
+                                                className="star-icon"
+                                            />
+                                        </button>
+                                    </td>
                                     <td>{contact.firstName} {contact.lastName}</td>
                                     <td>{contact.email}</td>
                                     <td>{contact.phone}</td>
@@ -84,9 +111,9 @@ const Home = () => {
                                 </tr>
                             )
                         ) : error ? (
-                            <tr><td colSpan={4} className="error-cell">{error}</td></tr>
+                            <tr><td colSpan={5} className="error-cell">{error}</td></tr>
                         ) : (
-                            <tr><td colSpan={4} className="empty-cell">Aucun contact</td></tr>
+                            <tr><td colSpan={5} className="empty-cell">Aucun contact</td></tr>
                         )}
                         </tbody>
                     </table>

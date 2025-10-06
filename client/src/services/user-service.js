@@ -18,8 +18,11 @@ export class UserService extends BaseService {
             })
     }
 
-    async getContacts() {
-        return this.fetchData(`${this.USER_BASE_URL}/me/contacts`)
+    async getContacts(favoriteOnly = false) {
+        const url = favoriteOnly
+            ? `${this.USER_BASE_URL}/me/contacts?favorite=true`
+            : `${this.USER_BASE_URL}/me/contacts`;
+        return this.fetchData(url)
             .then(r => r.data);
     }
 
@@ -36,6 +39,11 @@ export class UserService extends BaseService {
     async deleteContact(id) {
         return this.deleteData(`${this.USER_BASE_URL}/me/contacts/${id}`)
             .then(_ => {});
+    }
+
+    async toggleFavorite(id) {
+        return this.patchData(`${this.USER_BASE_URL}/me/contacts/${id}/favorite`)
+            .then(r => r.data);
     }
 }
 

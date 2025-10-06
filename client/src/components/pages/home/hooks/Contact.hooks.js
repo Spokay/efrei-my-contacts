@@ -11,6 +11,8 @@ export const useContacts = () => {
 
     const [editModalContact, setEditModalContact] = useState(null);
 
+    const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
     const openModal = (contact) => {
         if (contact)
             setEditModalContact(contact);
@@ -73,6 +75,29 @@ export const useContacts = () => {
             })
     }
 
+    const toggleFavorite = (id) => {
+        if (!id) {
+            return;
+        }
+
+        userServiceInstance.toggleFavorite(id)
+            .then((updatedContact) => {
+                if (!contacts) return;
+                const newContacts = contacts.map(contact =>
+                    contact._id === id ? updatedContact : contact
+                );
+                setContacts(newContacts);
+            })
+            .catch(err => {
+                console.error(err)
+                setError('Erreur lors de la modification du favori')
+            })
+    }
+
+    const toggleShowFavoritesOnly = () => {
+        setShowFavoritesOnly(prev => !prev);
+    }
+
     return {
         userServiceInstance,
         addContact,
@@ -85,7 +110,10 @@ export const useContacts = () => {
         closeModal,
         editContact,
         deleteContact,
+        toggleFavorite,
         editModalContact,
-        setEditModalContact
+        setEditModalContact,
+        showFavoritesOnly,
+        toggleShowFavoritesOnly
     }
 }

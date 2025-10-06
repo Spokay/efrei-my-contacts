@@ -58,6 +58,17 @@ class BaseService {
     })
   }
 
+  async patchData(url, data, content_type) {
+    return this.getClient()
+        .then(client => {
+          return client.patch(
+              `${this.baseUrl}${url}`,
+              data,
+              content_type ? { headers: { 'Content-Type': content_type } } : {}
+          )
+    })
+  }
+
   async loadToken() {
     return getToken()
         .then(token => {
