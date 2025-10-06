@@ -1,6 +1,7 @@
 import React from 'react';
-import {Loading} from '../common/Loading';
-import { UseAuthContext } from '../../contexts/auth-context';
+import {Loading} from '../../common/Loading';
+import { UseAuthContext } from '../../../contexts/auth-context';
+import './Profile.css';
 
 const Profile: React.FC = () => {
     const { user } = UseAuthContext();
@@ -10,6 +11,9 @@ const Profile: React.FC = () => {
     if (!user) {
         return <Loading />;
     }
+
+    const createdAt = user.createdAt.toLocaleDateString(locale);
+    const updatedAt = user.updatedAt.toLocaleDateString(locale);
 
     return (
         <div className="profile-container">
@@ -35,12 +39,12 @@ const Profile: React.FC = () => {
 
                 <div className="info-group">
                     <label>Compte créé le:</label>
-                    <p>{user.createdAt.toLocaleDateString(locale)}</p>
+                    <p>{createdAt}</p>
                 </div>
 
                 <div className="info-group">
                     <label>Dernière modification:</label>
-                    <p>{user.updatedAt.toLocaleDateString(locale)}</p>
+                    <p>{updatedAt}</p>
                 </div>
             </div>
         </div>

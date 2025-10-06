@@ -6,8 +6,18 @@ export class UserService extends BaseService {
     USER_BASE_URL = '/users';
 
     async getUserInfo(): Promise<UserResponse> {
-        return this.fetchData<UserResponse>(`${this.USER_BASE_URL}/me`)
-            .then(r => r.data)
+        return this.fetchData<any>(`${this.USER_BASE_URL}/me`)
+            .then(r => {
+                return {
+                    _id: r.data._id,
+                    email: r.data.email,
+                    firstName: r.data.firstName,
+                    lastName: r.data.lastName,
+                    phone: r.data.phone,
+                    createdAt: new Date(r.data.createdAt),
+                    updatedAt: new Date(r.data.updatedAt),
+                };
+            })
     }
 
     async getContacts(): Promise<Contact[]> {

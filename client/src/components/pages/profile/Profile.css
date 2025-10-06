@@ -1,0 +1,23 @@
+.profile-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin: 20px auto;
+    color: #333;
+    min-width: 400px;
+}
+
+.profile-info label{
+    margin: 5px 0;
+}
+
+.profile-info p{
+    margin-bottom: 15px;
+}
+
+.profile-header h1{
+    margin-bottom: 20px;
+}
