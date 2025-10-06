@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: EFREI My Contacts API
   description: A contact management API with JWT-based authentication
-  version: 1.0.0
+  version: 1.0.1
   contact:
     name: EFREI My Contacts
 

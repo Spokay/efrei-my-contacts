@@ -1,8 +1,12 @@
 import YAML from 'yamljs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import swaggerUi from 'swagger-ui-express';
 
-const swaggerDocument = YAML.load(path.join(__dirname, '../docs/openapi.yaml'));
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+
+const swaggerDocument = YAML.load(path.join(dirname, '../docs/openapi.yaml'));
 
 const swaggerOptions = {
     explorer: true,

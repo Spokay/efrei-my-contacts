@@ -4,15 +4,11 @@ WORKDIR /app
 
 COPY package*.json ./
 
-COPY tsconfig.json ./
-
 # copy all files in src
 
 COPY src ./src
 
 RUN npm install --omit=dev
-
-RUN npm run build
 
 RUN npm prune --omit=dev
 
@@ -22,12 +18,12 @@ WORKDIR /app
 
 COPY --from=build /app/node_modules ./node_modules
 
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/src ./src
 
-COPY --from=build /app/src/docs ./dist/docs
+COPY --from=build /app/src/docs ./docs
 
 ENV PORT=3000
 
 EXPOSE $PORT
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "src/server.js"]
