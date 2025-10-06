@@ -17,6 +17,10 @@ export const ContactSchema = new Schema({
     phone: {
         type: String,
         trim: true
+    },
+    isFavorite: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: false

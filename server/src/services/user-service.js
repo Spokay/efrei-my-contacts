@@ -1,6 +1,9 @@
 import {User} from '../models/user.js';
 import {hashPassword} from '../utils/password-utils.js';
 import {generateToken} from './token-service.js';
+import mongoose from 'mongoose';
+
+const { ObjectId } = mongoose.Types;
 
 export const findUserByEmail = async (email) => {
     return User.findOne({email: email.toLowerCase()});
@@ -29,8 +32,22 @@ export const createUser = async (param) => {
     return generateToken(savedUser);
 };
 
-export const getContacts = async (userId) => {
-    return User.findById(userId).then(mapToContacts);
+export const getContacts = async (userId, favoriteOnly = false) => {
+    const userObjectId = new ObjectId(userId);
+    const result = await User.aggregate([
+        { $match: { _id: userObjectId } },
+        { $project: {
+            contacts: favoriteOnly ? {
+                $filter: {
+                    input: '$contacts',
+                    as: 'contact',
+                    cond: { $eq: ['$$contact.isFavorite', true] }
+                }
+            } : '$contacts'
+        } }
+    ]);
+
+    return result.length > 0 ? result[0].contacts : null;
 }
 
 export const userExistsByEmail = async (email) => {
@@ -83,6 +100,24 @@ export const deleteContact = async (user, contactId) => {
     if (!newUser) {
         throw new Error('Failed to delete contact');
     }
+}
+
+export const toggleFavorite = async (user, contactId) => {
+    const contact = user.contacts.id(contactId);
+
+    if (!contact) {
+        throw new Error('Contact not found');
+    }
+
+    contact.isFavorite = !contact.isFavorite;
+
+    const savedUser = await user.save();
+
+    if (!savedUser) {
+        throw new Error('Failed to toggle favorite');
+    }
+
+    return contact;
 }
 
 export const estContactExistant = (newContact, user) => {

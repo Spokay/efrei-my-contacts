@@ -6,6 +6,7 @@ import {
     estContactExistant,
     findUserById,
     getContacts,
+    toggleFavorite,
     validateNewContact
 } from '../services/user-service.js';
 import {User} from "../models/user.js";
@@ -31,8 +32,9 @@ userRoutes.get('/me', async (req, res) => {
 
 userRoutes.get('/me/contacts', async (req, res) => {
     const tokenPayload = await getTokenPayloadFromRequest(req, res);
+    const favoriteOnly = req.query.favorite === 'true';
 
-    getContacts(tokenPayload.sub)
+    getContacts(tokenPayload.sub, favoriteOnly)
         .then(contacts => {
             if (!contacts) {
                 res.status(404).json({ message: 'User not found' });
@@ -121,6 +123,28 @@ userRoutes.delete('/me/contacts/:contactId', async (req, res) => {
             res.status(204).send();
         }).catch(err => {
             console.error(err);
+            res.status(500).json({ message: 'Internal server error' });
+        });
+});
+
+userRoutes.patch('/me/contacts/:contactId/favorite', async (req, res) => {
+    const tokenPayload = await getTokenPayloadFromRequest(req, res);
+    const contactId = req.params.contactId;
+
+    const user = await User.findById(tokenPayload.sub);
+
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    toggleFavorite(user, contactId)
+        .then(contact => {
+            res.status(200).json(contact);
+        }).catch(err => {
+            console.error(err);
+            if (err.message === 'Contact not found') {
+                return res.status(404).json({ message: 'Contact not found' });
+            }
             res.status(500).json({ message: 'Internal server error' });
         });
 });
