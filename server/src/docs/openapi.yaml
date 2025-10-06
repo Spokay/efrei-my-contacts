@@ -85,6 +85,9 @@ components:
         phone:
           type: string
           example: "0987654321"
+        isFavorite:
+          type: boolean
+          example: false
 
     ContactInput:
       type: object
@@ -267,9 +270,18 @@ paths:
       tags:
         - Contacts
       summary: Get user's contacts
-      description: Retrieve all contacts for the authenticated user
+      description: Retrieve all contacts for the authenticated user. Optionally filter by favorites.
       security:
         - BearerAuth: []
+      parameters:
+        - name: favorite
+          in: query
+          required: false
+          description: Filter to show only favorite contacts when set to 'true'
+          schema:
+            type: string
+            enum: ['true', 'false']
+            example: "true"
       responses:
         '200':
           description: Contacts retrieved successfully
@@ -427,6 +439,48 @@ paths:
       responses:
         '204':
           description: Contact deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or contact not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/me/contacts/{contactId}/favorite:
+    patch:
+      tags:
+        - Contacts
+      summary: Toggle contact favorite status
+      description: Toggle the favorite status of a contact for the authenticated user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: contactId
+          in: path
+          required: true
+          description: ID of the contact to toggle favorite status
+          schema:
+            type: string
+            example: "507f1f77bcf86cd799439011"
+      responses:
+        '200':
+          description: Favorite status toggled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
         '401':
           description: Unauthorized
           content:

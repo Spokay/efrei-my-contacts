@@ -45,7 +45,9 @@ Voici un apercu des endpoints et de leurs fonctions :
   - **GET** Informations utilisateurs connecté `/users/me`
   - **Routes Contacts** `/users/me/contacts`
     - **GET** Récupérer tous les contacts de l'utilisateur connecté `/users/me/contacts`
+      - Query param optionnel : `favorite=true` pour récupérer uniquement les contacts favoris
     - **POST** Créer un contact `/users/me/contacts`
     - **PUT** Modifier un contact `/users/me/contacts/{contactId}`
     - **DELETE** Supprimer un contact `/users/me/contacts/{contactId}`
+    - **PATCH** Changer le statut favori d'un contact `/users/me/contacts/{contactId}/favorite`
 - **Documentation de l'API** `/api-docs`
