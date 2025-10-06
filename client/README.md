@@ -1,8 +1,10 @@
-# EFREI My Contacts Client
+# EFREI MyContacts Client
 
-Ceci est le client de l'application My Contacts, développé dans le cadre du cours de Full-stack JS de l'EFREI. Ce client permet aux utilisateurs de gérer leurs contacts via une interface graphique en React.
+Ceci est le client de l'application MyContacts, développé dans le cadre du cours de Full-stack JS de l'EFREI. Ce client permet aux utilisateurs de gérer leurs contacts via une interface graphique en React.
 
 Ce projet utilise vite comme outil de build et de développement.
+
+Le client est hébergé à cette URL : https://efrei-my-contacts.netlify.app/
 
 ## Prérequis pour le développement
 - Node.js (avec npm)
