@@ -1,0 +1,35 @@
+import {findUserByEmail} from "./user-service.js";
+import {generateToken} from "./token-service.js";
+import {verifyPassword} from "../utils/password-utils.js";
+
+export const authenticate = async (authenticationRequest) => {
+
+    const user = await findUserByEmail(authenticationRequest.email);
+
+    if (!user) {
+        throw new Error('Invalid email or password');
+    }
+
+    if (!verifyPassword(authenticationRequest.password, user.password)) {
+        throw new Error('Invalid email or password');
+    }
+
+    return generateToken(user);
+}
+
+export const isAuthRequestValid = (authRequest) => {
+    return authRequest.email.length > 0 && authRequest.password.length > 0;
+}
+
+export const isRegistrationRequestValid = (registrationRequest) => {
+    return registrationRequest.email.length > 0 &&
+        registrationRequest.password.length >= 0 &&
+        registrationRequest.firstName.length > 0 &&
+        registrationRequest.lastName.length > 0 &&
+        validatePhoneNumber(registrationRequest.phone);
+}
+
+
+const validatePhoneNumber = (phoneNumber) => {
+    return phoneNumber.length >= 10 && phoneNumber.length <= 20;
+}

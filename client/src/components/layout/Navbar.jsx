@@ -1,0 +1,47 @@
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { UseAuthContext } from '../../contexts/auth-context';
+import './Navbar.css';
+
+const Navbar = () => {
+    const { user, logout } = UseAuthContext();
+    const location = useLocation();
+
+    const isActive = (path) => location.pathname === path;
+
+    return (
+        <nav className="navbar">
+            <div className="app-name">
+                <Link to="/">EFREI My Contacts</Link>
+            </div>
+
+            <div className="navbar-menu">
+                <div className="navbar-nav">
+                    <Link
+                        to="/"
+                        className={`nav-link ${isActive('/') ? 'active' : ''}`}
+                    >
+                        Accueil
+                    </Link>
+                    <Link
+                        to="/profile"
+                        className={`nav-link ${isActive('/profile') ? 'active' : ''}`}
+                    >
+                        Profil
+                    </Link>
+                </div>
+
+                <div className="navbar-user">
+                    <span className="user-name">
+                        Bonjour, {user?.firstName}
+                    </span>
+                    <button onClick={logout} className="logout-btn">
+                        Déconnexion
+                    </button>
+                </div>
+            </div>
+        </nav>
+    );
+};
+
+export default Navbar;
