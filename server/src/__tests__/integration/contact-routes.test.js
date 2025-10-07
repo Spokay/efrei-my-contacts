@@ -205,6 +205,87 @@ describe('Contact Management Integration Tests', () => {
       expect(response.status).toBe(401);
       expect(response.body.message).toBe('Unauthorized');
     });
+
+    test('should reject contact with invalid email (no @)', async () => {
+      // Arrange
+      const { token } = await createTestUser();
+      const newContact = {
+        firstName: 'Bob',
+        lastName: 'Jones',
+        email: 'invalidemail.com' // Missing @
+      };
+
+      // Act
+      const response = await request(app)
+        .post('/users/me/contacts')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newContact);
+
+      // Assert
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Bad request');
+      expect(response.body.details).toContain('The email must be a valid email address');
+    });
+
+    test('should reject contact with invalid email (no domain)', async () => {
+      // Arrange
+      const { token } = await createTestUser();
+      const newContact = {
+        firstName: 'Bob',
+        lastName: 'Jones',
+        email: 'user@' // No domain
+      };
+
+      // Act
+      const response = await request(app)
+        .post('/users/me/contacts')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newContact);
+
+      // Assert
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Bad request');
+    });
+
+    test('should accept contact with valid email', async () => {
+      // Arrange
+      const { token } = await createTestUser();
+      const newContact = {
+        firstName: 'Alice',
+        lastName: 'Smith',
+        email: 'alice.smith@example.com'
+      };
+
+      // Act
+      const response = await request(app)
+        .post('/users/me/contacts')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newContact);
+
+      // Assert
+      expect(response.status).toBe(201);
+      expect(response.body.email).toBe('alice.smith@example.com');
+    });
+
+    test('should accept contact without email (optional field)', async () => {
+      // Arrange
+      const { token } = await createTestUser();
+      const newContact = {
+        firstName: 'Charlie',
+        lastName: 'Brown'
+        // No email field
+      };
+
+      // Act
+      const response = await request(app)
+        .post('/users/me/contacts')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newContact);
+
+      // Assert
+      expect(response.status).toBe(201);
+      expect(response.body.firstName).toBe('Charlie');
+    });
   });
 
   describe('GET /users/me/contacts', () => {

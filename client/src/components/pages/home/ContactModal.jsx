@@ -2,6 +2,9 @@ import React, {useState} from 'react'
 import {useEffect} from "react";
 import './ContactModal.css';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
 export const ContactModalForm = (props) => {
 
     const [formData, setFormData] = useState({
@@ -36,6 +39,10 @@ export const ContactModalForm = (props) => {
         }
         if (formData.phone && !validatePhone(formData.phone)) {
             setError('Le numéro de téléphone doit contenir entre 10 et 20 caractères');
+            return false;
+        }
+        if (formData.email && !validateEmail(formData.email)) {
+            setError('L\'email doit être une adresse email valide');
             return false;
         }
         return true;
@@ -118,4 +125,8 @@ const areAllFieldEmpty = (formData) => {
 
 const validatePhone = (phone) => {
     return phone.length >= 10 && phone.length <= 20;
+}
+
+const validateEmail = (email) => {
+    return EMAIL_REGEX.test(email);
 }

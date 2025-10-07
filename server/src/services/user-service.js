@@ -5,6 +5,9 @@ import mongoose from 'mongoose';
 
 const { ObjectId } = mongoose.Types;
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
 export const findUserByEmail = async (email) => {
     return User.findOne({email: email.toLowerCase()});
 };
@@ -137,6 +140,11 @@ export const validateNewContact = (contact) => {
         validationResult.errors.push("The phone number must be between 10 and 20 characters")
     }
 
+    if (contact.email && !isEmailValid(contact.email)){
+        validationResult.isValid = false;
+        validationResult.errors.push("The email must be a valid email address")
+    }
+
     return validationResult
 }
 
@@ -173,4 +181,8 @@ const mapToContactBasicInfo = (contact) => {
 
 const isPhoneValid = (phone) => {
     return phone.length >= 10 && phone.length <= 20
+}
+
+const isEmailValid = (email) => {
+    return EMAIL_REGEX.test(email);
 }
